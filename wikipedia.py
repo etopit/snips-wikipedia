@@ -32,14 +32,6 @@ def subscribe_intent_callback(hermes, intentMessage):
 
 
 def action_wrapper(hermes, intentMessage, conf):
-    """ Write the body of the function that will be executed once the intent is recognized.
-    In your scope, you have the following objects :
-    - intentMessage : an object that represents the recognized intent
-    - hermes : an object with methods to communicate with the MQTT bus following the hermes protocol.
-    - conf : a dictionary that holds the skills parameters you defined.
-      To access global parameters use conf['global']['parameterName']. For end-user parameters use conf['secret']['parameterName']
-    Refer to the documentation for further details.
-    """
 
     ERROR_SENTENCES = {
                 'en': {
