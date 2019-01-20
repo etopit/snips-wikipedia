@@ -5,12 +5,9 @@ import ConfigParser
 from hermes_python.hermes import Hermes
 from hermes_python.ontology import *
 import io
-import wikipedia
 
 CONFIGURATION_ENCODING_FORMAT = "utf-8"
 CONFIG_INI = "config.ini"
-
-LANG = 'fr'
 
 class SnipsConfigParser(ConfigParser.SafeConfigParser):
     def to_dict(self):
@@ -32,21 +29,38 @@ def subscribe_intent_callback(hermes, intentMessage):
 
 
 def action_wrapper(hermes, intentMessage, conf):
+    """ Write the body of the function that will be executed once the intent is recognized.
+    In your scope, you have the following objects :
+    - intentMessage : an object that represents the recognized intent
+    - hermes : an object with methods to communicate with the MQTT bus following the hermes protocol.
+    - conf : a dictionary that holds the skills parameters you defined.
+      To access global parameters use conf['global']['parameterName']. For end-user parameters use conf['secret']['parameterName']
+
+    Refer to the documentation for further details.
+    """
+
+    import wikipedia
+
+
+    LANG = 'fr'
 
     ERROR_SENTENCES = {
-                'en': {
-                    'DisambiguationError': u"Many pages was found on Wikipedia for your query: ",
-                    'PageError': u"Wikipedia no matched your query"
-                },
-                'fr': {
-                    'DisambiguationError': u"Plusieurs pages on été trouvé sur wikipédia pour votre recherche, la quel souaitez vous: ",
-                    'PageError': u"Aucune page n'a été trouvé sur wikipédia pour votre recherche"
-                },
-                'es': {
-                    'DisambiguationError': u"Muchas pagas Wikipedia ",
-                    'PageError': u""
-                }
+            'en': {
+                'DisambiguationError': u"Many pages was found on Wikipedia for your query: ",
+                'PageError': u"Wikipedia no matched your query"
+            },
+            'fr': {
+                'DisambiguationError': u"Plusieurs pages on été trouvé sur wikipédia pour votre recherche, la quel souaitez vous: ",
+                'PageError': u"Aucune page n'a été trouvé sur wikipédia pour votre recherche"
+            },
+            'es': {
+                'DisambiguationError': u"Muchas pagas Wikipedia ",
+                'PageError': u""
             }
+        }
+
+
+
     if intentMessage.slots.article_indicator:
             query = intentMessage.slots.article_indicator[0].slot_value.value.value
     else:
@@ -69,7 +83,6 @@ def action_wrapper(hermes, intentMessage, conf):
     try:
             result = wikipedia.summary(str(query), auto_suggest=True, sentences=sentences)
 
-    #except wikipedia.exceptions.DisambiguationError, e:
     except wikipedia.exceptions.DisambiguationError:
             # Exception raised when a page resolves to a Disambiguation page.
             # The options property contains a list of titles of Wikipedia pages that the query may refer to.
