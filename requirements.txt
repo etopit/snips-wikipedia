@@ -1,2 +1,2 @@
-hermes-python>=0.1
+hermes-python>=0.2
 wikipedia>=0.1
